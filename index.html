@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --bg-color: #f4f1ea; /* Ашық, этно-түс */
+            --text-color: #333;
+            --accent-color: #c9a66b; /* Алтын-қоңыр нақыш */
+            --card-bg: #ffffff;
+            --btn-bg: #5d4037; /* Қоңыр, табиғи түс */
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Georgia', serif; /* Сәл классикалық шрифт */
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .header {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .header h1 {
+            color: var(--accent-color);
+            margin: 0 0 10px 0;
+            font-size: 28px;
+        }
+
+        .header p {
+            margin: 0;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .gen-status {
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .gen-count {
+            color: var(--accent-color);
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .upload-card {
+            background-color: var(--card-bg);
+            border: 2px dashed #bcaaa4;
+            padding: 50px;
+            border-radius: 15px;
+            margin: 30px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .upload-card:hover {
+            border-color: var(--accent-color);
+            background-color: #fafafa;
+        }
+
+        .upload-icon {
+            font-size: 50px;
+            color: #8d6e63;
+        }
+
+        .pricing-btn {
+            background-color: var(--btn-bg);
+            color: white;
+            padding: 18px;
+            border-radius: 12px;
+            font-weight: bold;
+            width: 100%;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 10px rgba(93, 64, 55, 0.3);
+            transition: background-color 0.3s;
+        }
+
+        .pricing-btn:hover {
+            background-color: #4e342e;
+        }
+        
+        .examples {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .example-img {
+            width: 80px;
+            height: 80px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Көркем AI</h1>
+        <p>Фотоңызды AI арқылы ұлттық стильде жаңартыңыз</p>
+        <div class="gen-status">Сізде <span class="gen-count">3</span> тегін генерация бар</div>
+    </div>
+
+    <div class="upload-card" onclick="uploadPhoto()">
+        <span class="upload-icon">📷</span>
+        <p style="color: #6d4c41; font-weight: bold;">Фото жүктеу</p>
+        <div style="font-size: 12px; color: #8d6e63;">JPG, PNG, WEBP (макс. 5Мб)</div>
+    </div>
+
+    <button class="pricing-btn" onclick="openPricing()">Пакеттерді көру</button>
+    
+    <div class="examples">
+        <div class="example-img"></div>
+        <div class="example-img"></div>
+        <div class="example-img"></div>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        function uploadPhoto() {
+            // Телеграмның фото жүктеу терезесін ашу
+            alert("Файл жүктеу терезесі ашылады... (Қазір JS кодын қосамыз)");
+            tg.HapticFeedback.impactOccurred('medium');
+        }
+
+        function openPricing() {
+            tg.HapticFeedback.impactOccurred('light');
+            alert("Тарифтер тізімі ашылады...");
+        }
+    </script>
+</body>
+</html>
