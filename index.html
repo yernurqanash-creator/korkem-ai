@@ -6,17 +6,17 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: #f4f1ea; /* Ашық, этно-түс */
+            --bg-color: #f4f1ea;
             --text-color: #333;
-            --accent-color: #c9a66b; /* Алтын-қоңыр нақыш */
+            --accent-color: #c9a66b;
             --card-bg: #ffffff;
-            --btn-bg: #5d4037; /* Қоңыр, табиғи түс */
+            --btn-bg: #5d4037;
         }
         
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            font-family: 'Georgia', serif; /* Сәл классикалық шрифт */
+            font-family: 'Georgia', serif;
             margin: 0;
             padding: 20px;
             text-align: center;
@@ -62,7 +62,6 @@
             margin: 30px 0;
             cursor: pointer;
             transition: all 0.3s ease;
-            position: relative;
         }
 
         .upload-card:hover {
@@ -88,11 +87,6 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             box-shadow: 0 4px 10px rgba(93, 64, 55, 0.3);
-            transition: background-color 0.3s;
-        }
-
-        .pricing-btn:hover {
-            background-color: #4e342e;
         }
         
         .examples {
@@ -119,9 +113,9 @@
         <div class="gen-status">Сізде <span class="gen-count">5</span> тегін генерация бар</div>
     </div>
 
-    <div class="upload-card" onclick="uploadPhoto()">
+    <div class="upload-card" id="upload-btn" onclick="uploadPhoto()">
         <span class="upload-icon">📷</span>
-        <p style="color: #6d4c41; font-weight: bold;">Фото жүктеу</p>
+        <p id="upload-text" style="color: #6d4c41; font-weight: bold;">Фото жүктеу</p>
         <div style="font-size: 12px; color: #8d6e63;">JPG, PNG, WEBP (макс. 5Мб)</div>
     </div>
 
@@ -130,82 +124,74 @@
     <div class="examples">
         <div class="example-img"></div>
         <div class="example-img"></div>
-        <div class="example-img"></div>
+        <div class="example-img)</div>
     </div>
 
     <script>
-        const teg = window.Telegram.WebApp;
+        // 1. Telegram WebApp инициализациясы
+        const tg = window.Telegram.WebApp;
         tg.expand();
 
+        // 2. API сілтемесі (Сенің AWS API сілтемең)
+        const API_URL = "https://0mwpwu9rhj.execute-api.eu-north-1.amazonaws.com/prod/"; 
+
         function uploadPhoto() {
-            // Телеграмның фото жүктеу терезесін ашу
-            alert("Файл жүктеу терезесі ашылады... (Қазір JS кодын қосамыз)");
             tg.HapticFeedback.impactOccurred('medium');
+            
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            
+            input.onchange = e => {
+                const file = e.target.files[0]; // Түзетілді: e.target.target емес
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const base64String = event.target.result.split(',')[1];
+                    sendToBackend(base64String);
+                };
+                reader.readAsDataURL(file);
+            };
+            
+            input.click();
+        }
+
+        async function sendToBackend(base64Data) {
+            tg.MainButton.setText("Фото жүктелуде... ✨").show();
+            document.getElementById('upload-text').innerText = "Жүктелуде...";
+
+            const payload = {
+                image_data: base64Data,
+                user_id: tg.initDataUnsafe.user?.id || "guest"
+            };
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload) // Түзетілді: JSON үлкен әріппен
+                });
+
+                if (response.ok) {
+                    tg.HapticFeedback.notificationOccurred('success');
+                    alert("Керемет! Фото бұлтқа ұшты. AI өңдеуін күтіңіз.");
+                } else {
+                    throw new Error("Сервер жауап бермеді");
+                }
+            } catch (error) {
+                alert("Қате шықты: " + error.message);
+                tg.HapticFeedback.notificationOccurred('error');
+            } finally {
+                tg.MainButton.hide();
+                document.getElementById('upload-text').innerText = "Фото жүктеу";
+            }
         }
 
         function openPricing() {
             tg.HapticFeedback.impactOccurred('light');
-            alert("Тарифтер тізімі ашылады...");
+            alert("Пакеттер бөлімі жақында қосылады!");
         }
     </script>
-     
-     <script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
-
-    // 1. API СІЛТЕМЕСІН ОСЫНДА ҚОЙ (Ең маңызды жері!)
-    const API_URL = "https://0mwpwu9rhj.execute-api.eu-north-1.amazonaws.com/prod/"; 
-
-    function uploadPhoto() {
-        // Жасырын файл таңдау терезесін ашу
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';
-        
-        input.onchange = e => {
-            const file = e.target.target.files[0];
-            const reader = new FileReader();
-            
-            reader.onload = function(event) {
-                const base64String = event.target.result.split(',')[1];
-                sendToBackend(base64String);
-            };
-            
-            reader.readAsDataURL(file);
-        };
-        
-        input.click();
-    }
-
-    async function sendToBackend(base64Data) {
-        tg.MainButton.setText("Фото жүктелуде... ⏳").show();
-        
-        const payload = {
-            image_data: base64Data,
-            user_id: tg.initDataUnsafe.user?.id || "guest"
-        };
-
-        try {
-            const response = await fetch(API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: json.stringify(payload)
-            });
-
-            if (response.ok) {
-                tg.HapticFeedback.notificationOccurred('success');
-                alert("Керемет! Фото бұлтқа ұшты. AI өңдеуін күтіңіз.");
-            } else {
-                throw new Error("Сервер қатесі");
-            }
-        } catch (error) {
-            alert("Қате шықты: " + error.message);
-        } finally {
-            tg.MainButton.hide();
-        }
-    }
-</script>
-
-
 </body>
 </html>
