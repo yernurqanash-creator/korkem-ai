@@ -124,15 +124,13 @@
     <div class="examples">
         <div class="example-img"></div>
         <div class="example-img"></div>
-        <div class="example-img)</div>
+        <div class="example-img"></div>
     </div>
 
     <script>
-        // 1. Telegram WebApp инициализациясы
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // 2. API сілтемесі (Сенің AWS API сілтемең)
         const API_URL = "https://0mwpwu9rhj.execute-api.eu-north-1.amazonaws.com/prod/"; 
 
         function uploadPhoto() {
@@ -143,7 +141,7 @@
             input.accept = 'image/*';
             
             input.onchange = e => {
-                const file = e.target.files[0]; // Түзетілді: e.target.target емес
+                const file = e.target.files[0]; 
                 if (!file) return;
 
                 const reader = new FileReader();
@@ -170,7 +168,7 @@
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload) // Түзетілді: JSON үлкен әріппен
+                    body: JSON.stringify(payload) 
                 });
 
                 if (response.ok) {
