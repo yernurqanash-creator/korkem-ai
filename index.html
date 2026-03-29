@@ -134,7 +134,7 @@
     </div>
 
     <script>
-        const tg = window.Telegram.WebApp;
+        const teg = window.Telegram.WebApp;
         tg.expand();
 
         function uploadPhoto() {
@@ -148,5 +148,64 @@
             alert("Тарифтер тізімі ашылады...");
         }
     </script>
+     
+     <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    // 1. API СІЛТЕМЕСІН ОСЫНДА ҚОЙ (Ең маңызды жері!)
+    const API_URL = "СЕНІҢ_API_ENDPOINT_ОСЫНДА"; 
+
+    function uploadPhoto() {
+        // Жасырын файл таңдау терезесін ашу
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        
+        input.onchange = e => {
+            const file = e.target.target.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(event) {
+                const base64String = event.target.result.split(',')[1];
+                sendToBackend(base64String);
+            };
+            
+            reader.readAsDataURL(file);
+        };
+        
+        input.click();
+    }
+
+    async function sendToBackend(base64Data) {
+        tg.MainButton.setText("Фото жүктелуде... ⏳").show();
+        
+        const payload = {
+            image_data: base64Data,
+            user_id: tg.initDataUnsafe.user?.id || "guest"
+        };
+
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: json.stringify(payload)
+            });
+
+            if (response.ok) {
+                tg.HapticFeedback.notificationOccurred('success');
+                alert("Керемет! Фото бұлтқа ұшты. AI өңдеуін күтіңіз.");
+            } else {
+                throw new Error("Сервер қатесі");
+            }
+        } catch (error) {
+            alert("Қате шықты: " + error.message);
+        } finally {
+            tg.MainButton.hide();
+        }
+    }
+</script>
+
+
 </body>
 </html>
