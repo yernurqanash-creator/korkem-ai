@@ -7,25 +7,18 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: #FDFBF7; /* Ақшыл киіз түсі */
-            --text-dark: #2C3E50;
-            --gold: #D4AF37; /* Алтын */
-            --gold-light: #F4E5B3;
-            --accent: #1ABC9C; /* Көгілдір */
-            --btn-bg: #2C3E50;
+            --bg-color: #FDFBF7; --text-dark: #2C3E50;
+            --gold: #D4AF37; --gold-light: #F4E5B3;
+            --accent: #1ABC9C; --btn-bg: #2C3E50;
         }
-        
-        /* ЖАҢА ҚАЗАҚИ ДИЗАЙН (ФОН) */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-color); color: var(--text-dark);
             margin: 0; padding: 20px; text-align: center;
-            /* НӘЗІК ҚАЗАҚИ ФОН (Subtle background pattern) */
             background-image: url('https://www.transparenttextures.com/patterns/arabesque.png'); 
             background-blend-mode: multiply;
         }
         
-        /* Тіл ауыстыру */
         .lang-switch { display: flex; justify-content: flex-end; gap: 8px; margin-bottom: 20px; }
         .lang-btn {
             background: transparent; border: 1px solid var(--gold); color: var(--gold);
@@ -34,27 +27,14 @@
         }
         .lang-btn.active { background: var(--gold); color: white; }
 
-        /* ЖАҢА ТАҚЫРЫП ДИЗАЙНЫ */
         .header { 
             font-size: 32px; font-weight: 900; color: var(--btn-bg); 
-            margin-bottom: 5px; position: relative;
-            letter-spacing: 1px; text-transform: uppercase;
+            margin-bottom: 5px; position: relative; letter-spacing: 1px; text-transform: uppercase;
         }
         .header span { color: var(--gold); }
-        
-        /* ТАҚЫРЫПТЫҢ АСТЫНДАҒЫ АЛТЫН ОЮ */
-        .header::after {
-            content: "🙐 🙒"; /* Элиталық ою символы */
-            display: block;
-            font-size: 24px;
-            color: var(--gold);
-            margin-top: 5px;
-            opacity: 0.8;
-        }
-        
+        .header::after { content: "🙐 🙒"; display: block; font-size: 24px; color: var(--gold); margin-top: 5px; opacity: 0.8; }
         .subtitle { font-size: 14px; color: #7f8c8d; margin-bottom: 25px; }
 
-        /* Фото жүктеу аймағы */
         .upload-box {
             background: white; border: 2px dashed var(--gold); border-radius: 20px;
             padding: 40px 20px; margin-bottom: 20px; box-shadow: 0 10px 20px rgba(212, 175, 55, 0.1);
@@ -62,7 +42,6 @@
         .upload-icon { font-size: 40px; margin-bottom: 10px; }
         #fileInput { display: none; }
 
-        /* Батырмалар */
         .main-btn {
             background: var(--btn-bg); color: white; border: none; padding: 16px 30px;
             font-size: 16px; border-radius: 30px; width: 100%; font-weight: bold;
@@ -70,24 +49,16 @@
         }
         .main-btn:active { transform: scale(0.98); }
 
-        /* Пакеттер */
         .packages-title { font-size: 18px; font-weight: bold; margin-bottom: 15px; color: var(--btn-bg); text-align: left; }
-        
-        /* ЖАҢА ПАКЕТ ДИЗАЙНЫ */
         .package-card {
-            background: white; 
-            border-left: 5px solid var(--gold); 
-            border-radius: 12px;
-            padding: 15px; margin-bottom: 12px; 
-            display: flex; justify-content: space-between; align-items: center;
-            /* ПАКЕТТЕРГЕ ҚАЗАҚИ РЕҢК (Алтын көлеңке) */
+            background: white; border-left: 5px solid var(--gold); border-radius: 12px;
+            padding: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;
             box-shadow: 0 4px 15px rgba(212, 175, 55, 0.15);
         }
         .pkg-name { font-weight: bold; font-size: 16px; color: var(--btn-bg); text-align: left; }
         .pkg-desc { font-size: 12px; color: gray; margin-top: 3px; text-align: left; }
         .pkg-price { background: var(--gold-light); color: var(--btn-bg); padding: 5px 12px; border-radius: 20px; font-size: 14px; font-weight: bold; }
 
-        /* Күту экраны */
         #loading-ui { display: none; margin-top: 60px; }
         .spinner {
             width: 60px; height: 60px; border: 5px solid var(--gold-light);
@@ -96,43 +67,28 @@
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* 🖼 ДО/ПОСЛЕ (Бұрын/Кейін) СЛАЙДЕРІ */
         #result-ui { display: none; }
         .slider-container {
             position: relative; width: 100%; max-width: 400px; height: 350px;
             margin: 0 auto 20px; border-radius: 15px; overflow: hidden;
             box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 3px solid var(--gold);
         }
-        .slider-container img {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;
-        }
+        .slider-container img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
         #img-before { clip-path: inset(0 50% 0 0); }
-        
-        .slider-input {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            opacity: 0; cursor: ew-resize; z-index: 10;
-        }
+        .slider-input { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: ew-resize; z-index: 10; }
         .slider-line {
-            position: absolute; top: 0; left: 50%; width: 4px; height: 100%;
-            background: white; z-index: 5; transform: translateX(-50%);
-            box-shadow: 0 0 10px rgba(0,0,0,0.5); pointer-events: none;
+            position: absolute; top: 0; left: 50%; width: 4px; height: 100%; background: white; z-index: 5; 
+            transform: translateX(-50%); box-shadow: 0 0 10px rgba(0,0,0,0.5); pointer-events: none;
         }
         .slider-button {
-            position: absolute; top: 50%; left: 50%; width: 30px; height: 30px;
-            background: white; border: 3px solid var(--gold); border-radius: 50%;
-            transform: translate(-50%, -50%); z-index: 6; pointer-events: none;
-            display: flex; justify-content: center; align-items: center;
+            position: absolute; top: 50%; left: 50%; width: 30px; height: 30px; background: white; 
+            border: 3px solid var(--gold); border-radius: 50%; transform: translate(-50%, -50%); 
+            z-index: 6; display: flex; justify-content: center; align-items: center; pointer-events: none;
         }
         .slider-button::after { content: "↔"; color: var(--gold); font-weight: bold; font-size: 16px; }
 
-        .download-btn {
-            background: var(--accent); color: white; border: none; padding: 15px;
-            font-size: 16px; border-radius: 15px; width: 100%; font-weight: bold; margin-bottom: 10px;
-        }
-        .new-photo-btn {
-            background: transparent; color: var(--btn-bg); border: 2px solid var(--btn-bg);
-            padding: 15px; font-size: 16px; border-radius: 15px; width: 100%; font-weight: bold;
-        }
+        .download-btn { background: var(--accent); color: white; border: none; padding: 15px; font-size: 16px; border-radius: 15px; width: 100%; font-weight: bold; margin-bottom: 10px; }
+        .new-photo-btn { background: transparent; color: var(--btn-bg); border: 2px solid var(--btn-bg); padding: 15px; font-size: 16px; border-radius: 15px; width: 100%; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -160,10 +116,10 @@
 
         <div class="packages-title" id="t-pkg-title">Қолжетімді генерациялар: <span style="background: var(--gold); color: white; padding: 2px 8px; border-radius: 10px;">2</span></div>
         
-       <div class="package-card">
+        <div class="package-card">
             <div>
                 <div class="pkg-name">Стандарт (Standard)</div>
-                <div class="pkg-desc" id="t-pkg1-desc">7 генерация</div>
+                <div class="pkg-desc" id="t-pkg1-desc">7 генерация (сурет)</div>
             </div>
             <div class="pkg-price">199 ₸</div>
         </div>
@@ -174,6 +130,7 @@
             </div>
             <div class="pkg-price" style="background: var(--accent); color: white;">399 ₸</div>
         </div>
+    </div>
 
     <div id="loading-ui">
         <div class="spinner"></div>
@@ -183,7 +140,6 @@
 
     <div id="result-ui">
         <div class="header" style="font-size: 24px;">Нәтиже</div>
-        
         <div class="slider-container">
             <img id="img-after" src="" alt="After">
             <img id="img-before" src="" alt="Before">
@@ -191,7 +147,6 @@
             <div class="slider-button" id="slider-button"></div>
             <input type="range" min="0" max="100" value="50" class="slider-input" id="compare-slider">
         </div>
-
         <button class="download-btn" id="t-download" onclick="tg.close()">Жүктеп алу (Чатқа сақтау) 💾</button>
         <button class="new-photo-btn" id="t-new" onclick="location.reload()">Жаңа фото жүктеу</button>
     </div>
@@ -221,7 +176,7 @@
                 'subtitle': 'Enhance your photo quality with AI',
                 'upload-title': 'Upload Photo', 'upload-desc': 'Tap or select a file',
                 'btn': 'START PROCESSING', 'pkg-title': 'Available generations: <span style="background: var(--gold); color: white; padding: 2px 8px; border-radius: 10px;">2</span>',
-               'pkg1-desc': '7 generations (photos)', 'pkg2-desc': 'Unlimited access (VIP)',
+                'pkg1-desc': '7 generations (photos)', 'pkg2-desc': 'Unlimited access (VIP)',
                 'load-title': 'AI is working...', 'load-desc': 'This will take 10-15 seconds. Please wait...',
                 'download': 'Download (Save to chat) 💾', 'new': 'Upload new photo', 'success': 'Photo is ready! ✅'
             }
@@ -278,41 +233,38 @@
             const base64Data = localImageDataUrl.split(',')[1];
             const userId = tg.initDataUnsafe?.user?.id || 'guest';
             
-           // 🔴 1. СУРЕТТІ ӨҢДЕУГЕ ЖІБЕРЕТІН СІЛТЕМЕ
+            // СЕНІҢ АМАЗОН СІЛТЕМЕҢ (Автоматты түрде қойылды)
             const apiGatewayUrl = "https://0mwpwu9rhj.execute-api.eu-north-1.amazonaws.com/prod/"; 
 
+            // 1. Суретті өңдеуге жіберу
             fetch(apiGatewayUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ image_data: base64Data, user_id: userId })
             }).catch(err => console.log(err));
 
-            // 🔴 2. МИНИ АПП ӘР 3 СЕКУНД САЙЫН "ДАЙЫН БА?" ДЕП СҰРАЙДЫ
+            // 2. Әр 3 секунд сайын "Дайын ба?" деп сұрау (Polling)
             let checkInterval = setInterval(() => {
                 fetch(apiGatewayUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ check_status: true, user_id: userId }) // Статус сұрап жатырмыз!
+                    body: JSON.stringify({ check_status: true, user_id: userId })
                 })
                 .then(res => res.json())
                 .then(data => {
-                    // Егер базадан "ready" деген жауап келсе және сілтемесі болса
+                    // Базадан "ready" статусы және жаңа суреттің сілтемесі келсе
                     if (data.status === 'ready' && data.latest_photo) {
-                        clearInterval(checkInterval); // Сұрауды тоқтатамыз
+                        clearInterval(checkInterval); // Сұрауды тоқтату
                         
-                        // Магиялық экранды (ползунокты) қосу
                         document.getElementById('loading-ui').style.display = 'none';
                         document.getElementById('result-ui').style.display = 'block';
                         
-                        // "Бұрынғы" суретке өзіміздің түпнұсқаны қоямыз
-                        document.getElementById('img-before').src = localImageDataUrl;
-                        
-                        // 🌟 "КЕЙІНГІ" СУРЕТКЕ АМАЗОННАН КЕЛГЕН НАҒЫЗ СУРЕТТІ ҚОЯМЫЗ
-                        document.getElementById('img-after').src = data.latest_photo; 
+                        document.getElementById('img-before').src = localImageDataUrl; // Түпнұсқа (Бұрын)
+                        document.getElementById('img-after').src = data.latest_photo;  // Өңделген сурет (Кейін)
                     }
                 })
                 .catch(err => console.log("Күтілуде..."));
-            }, 3000); // 3000 миллисекунд = 3 секунд;
+            }, 3000); // 3 секунд сайын
         });
     </script>
 </body>
