@@ -160,21 +160,20 @@
 
         <div class="packages-title" id="t-pkg-title">Қолжетімді генерациялар: <span style="background: var(--gold); color: white; padding: 2px 8px; border-radius: 10px;">2</span></div>
         
-        <div class="package-card">
+       <div class="package-card">
             <div>
-                <div class="pkg-name">Көшпенді (Nomad)</div>
-                <div class="pkg-desc" id="t-pkg1-desc">Жоғары сапа, 10 сурет</div>
+                <div class="pkg-name">Стандарт (Standard)</div>
+                <div class="pkg-desc" id="t-pkg1-desc">7 генерация</div>
             </div>
-            <div class="pkg-price">100 ₸</div>
+            <div class="pkg-price">199 ₸</div>
         </div>
         <div class="package-card" style="border-left-color: var(--accent);">
             <div>
-                <div class="pkg-name">Хан (Khan)</div>
-                <div class="pkg-desc" id="t-pkg2-desc">Премиум сапа, 30 сурет</div>
+                <div class="pkg-name">Шексіз (Unlimited)</div>
+                <div class="pkg-desc" id="t-pkg2-desc">Шексіз доступ (VIP)</div>
             </div>
-            <div class="pkg-price" style="background: var(--accent); color: white;">300 ₸</div>
+            <div class="pkg-price" style="background: var(--accent); color: white;">399 ₸</div>
         </div>
-    </div>
 
     <div id="loading-ui">
         <div class="spinner"></div>
@@ -206,7 +205,7 @@
                 'subtitle': 'Жасанды интеллект арқылы фотоңызды жаңартыңыз',
                 'upload-title': 'Фото жүктеу', 'upload-desc': 'Түртіңіз немесе файл таңдаңыз',
                 'btn': 'ӨҢДЕУДІ БАСТАУ', 'pkg-title': 'Қолжетімді генерациялар: <span style="background: var(--gold); color: white; padding: 2px 8px; border-radius: 10px;">2</span>',
-                'pkg1-desc': 'Жоғары сапа, 10 сурет', 'pkg2-desc': 'Премиум сапа, 30 сурет',
+                'pkg1-desc': '7 генерация (сурет)', 'pkg2-desc': 'Шексіз доступ (VIP)',
                 'load-title': 'Нейрожелі іске қосылды...', 'load-desc': 'Бұл 10-15 секунд алуы мүмкін. Күте тұрыңыз...',
                 'download': 'Жүктеп алу (Чатқа сақтау) 💾', 'new': 'Жаңа фото жүктеу', 'success': 'Фото дайын! ✅'
             },
@@ -214,7 +213,7 @@
                 'subtitle': 'Улучшите качество фото с помощью ИИ',
                 'upload-title': 'Загрузить фото', 'upload-desc': 'Нажмите или выберите файл',
                 'btn': 'НАЧАТЬ ОБРАБОТКУ', 'pkg-title': 'Доступные генерации: <span style="background: var(--gold); color: white; padding: 2px 8px; border-radius: 10px;">2</span>',
-                'pkg1-desc': 'Высокое качество, 10 фото', 'pkg2-desc': 'Премиум качество, 30 фото',
+                'pkg1-desc': '7 генераций (фото)', 'pkg2-desc': 'Безлимитный доступ (VIP)',
                 'load-title': 'Нейросеть работает...', 'load-desc': 'Это займет 10-15 секунд. Пожалуйста, подождите...',
                 'download': 'Скачать (Сохранить в чат) 💾', 'new': 'Загрузить новое фото', 'success': 'Фото готово! ✅'
             },
@@ -222,7 +221,7 @@
                 'subtitle': 'Enhance your photo quality with AI',
                 'upload-title': 'Upload Photo', 'upload-desc': 'Tap or select a file',
                 'btn': 'START PROCESSING', 'pkg-title': 'Available generations: <span style="background: var(--gold); color: white; padding: 2px 8px; border-radius: 10px;">2</span>',
-                'pkg1-desc': 'High quality, 10 photos', 'pkg2-desc': 'Premium quality, 30 photos',
+               'pkg1-desc': '7 generations (photos)', 'pkg2-desc': 'Unlimited access (VIP)',
                 'load-title': 'AI is working...', 'load-desc': 'This will take 10-15 seconds. Please wait...',
                 'download': 'Download (Save to chat) 💾', 'new': 'Upload new photo', 'success': 'Photo is ready! ✅'
             }
@@ -279,6 +278,7 @@
             const base64Data = localImageDataUrl.split(',')[1];
             const userId = tg.initDataUnsafe?.user?.id || 'guest';
             
+           // 🔴 1. СУРЕТТІ ӨҢДЕУГЕ ЖІБЕРЕТІН СІЛТЕМЕ
             const apiGatewayUrl = "https://0mwpwu9rhj.execute-api.eu-north-1.amazonaws.com/prod/"; 
 
             fetch(apiGatewayUrl, {
@@ -287,13 +287,32 @@
                 body: JSON.stringify({ image_data: base64Data, user_id: userId })
             }).catch(err => console.log(err));
 
-            setTimeout(() => {
-                document.getElementById('loading-ui').style.display = 'none';
-                document.getElementById('result-ui').style.display = 'block';
-                
-                document.getElementById('img-before').src = localImageDataUrl;
-                document.getElementById('img-after').src = localImageDataUrl; 
-            }, 15000);
+            // 🔴 2. МИНИ АПП ӘР 3 СЕКУНД САЙЫН "ДАЙЫН БА?" ДЕП СҰРАЙДЫ
+            let checkInterval = setInterval(() => {
+                fetch(apiGatewayUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ check_status: true, user_id: userId }) // Статус сұрап жатырмыз!
+                })
+                .then(res => res.json())
+                .then(data => {
+                    // Егер базадан "ready" деген жауап келсе және сілтемесі болса
+                    if (data.status === 'ready' && data.latest_photo) {
+                        clearInterval(checkInterval); // Сұрауды тоқтатамыз
+                        
+                        // Магиялық экранды (ползунокты) қосу
+                        document.getElementById('loading-ui').style.display = 'none';
+                        document.getElementById('result-ui').style.display = 'block';
+                        
+                        // "Бұрынғы" суретке өзіміздің түпнұсқаны қоямыз
+                        document.getElementById('img-before').src = localImageDataUrl;
+                        
+                        // 🌟 "КЕЙІНГІ" СУРЕТКЕ АМАЗОННАН КЕЛГЕН НАҒЫЗ СУРЕТТІ ҚОЯМЫЗ
+                        document.getElementById('img-after').src = data.latest_photo; 
+                    }
+                })
+                .catch(err => console.log("Күтілуде..."));
+            }, 3000); // 3000 миллисекунд = 3 секунд;
         });
     </script>
 </body>
