@@ -2,194 +2,194 @@
 <html lang="kk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Көркем AI</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: #f4f1ea;
-            --text-color: #333;
-            --accent-color: #c9a66b;
-            --card-bg: #ffffff;
-            --btn-bg: #5d4037;
+            --bg-color: #F5F1E7; /* Ақшыл бежевый, киіз түсі */
+            --text-dark: #2C3E50;
+            --gold: #D4AF37;
+            --accent: #40E0D0; /* Көгілдір / Turquoise */
+            --btn-bg: #34495E;
         }
-        
         body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: 'Georgia', serif;
+            color: var(--text-dark);
             margin: 0;
             padding: 20px;
             text-align: center;
+            /* Фонға нәзік текстура қосуға болады */
+            background-image: url('https://www.transparenttextures.com/patterns/cream-paper.png'); 
         }
-        
         .header {
-            background-color: var(--card-bg);
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            margin-bottom: 25px;
-            border: 1px solid #e0e0e0;
-        }
-
-        .header h1 {
-            color: var(--accent-color);
-            margin: 0 0 10px 0;
             font-size: 28px;
-        }
-
-        .header p {
-            margin: 0;
-            color: #666;
-            font-size: 14px;
-        }
-
-        .gen-status {
-            margin-top: 15px;
-            font-size: 14px;
-        }
-
-        .gen-count {
-            color: var(--accent-color);
             font-weight: bold;
-            font-size: 18px;
-        }
-
-        .upload-card {
-            background-color: var(--card-bg);
-            border: 2px dashed #bcaaa4;
-            padding: 50px;
-            border-radius: 15px;
-            margin: 30px 0;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .upload-card:hover {
-            border-color: var(--accent-color);
-            background-color: #fafafa;
-        }
-
-        .upload-icon {
-            font-size: 50px;
-            color: #8d6e63;
-        }
-
-        .pricing-btn {
-            background-color: var(--btn-bg);
-            color: white;
-            padding: 18px;
-            border-radius: 12px;
-            font-weight: bold;
-            width: 100%;
-            border: none;
-            font-size: 16px;
-            cursor: pointer;
+            color: var(--gold);
             text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 4px 10px rgba(93, 64, 55, 0.3);
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         }
-        
-        .examples {
-            margin-top: 30px;
-            display: flex;
-            justify-content: center;
-            gap: 15px;
+        .subtitle {
+            font-size: 14px;
+            color: var(--text-dark);
+            margin-bottom: 25px;
+            font-style: italic;
         }
+        .upload-box {
+            background: #fff;
+            border: 2px dashed var(--gold);
+            border-radius: 15px;
+            padding: 40px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: 0.3s;
+        }
+        .upload-box:active { transform: scale(0.98); }
+        .upload-icon { font-size: 40px; margin-bottom: 10px; }
         
-        .example-img {
-            width: 80px;
-            height: 80px;
-            background-color: #e0e0e0;
+        /* Пакеттер дизайны */
+        .packages-title { font-size: 18px; font-weight: bold; margin: 30px 0 15px; color: var(--btn-bg); }
+        .package-card {
+            background: white;
+            border-left: 5px solid var(--gold);
             border-radius: 10px;
-            border: 1px solid #ccc;
+            padding: 15px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
+        .pkg-name { font-weight: bold; font-size: 16px; color: var(--btn-bg); }
+        .pkg-price { background: var(--gold); color: white; padding: 5px 12px; border-radius: 20px; font-size: 14px; font-weight: bold; }
+        
+        #fileInput { display: none; }
+        .main-btn {
+            background: var(--btn-bg);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 25px;
+            width: 100%;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(52, 73, 94, 0.3);
+            margin-top: 10px;
+        }
+        
+        /* Loading анимациясы */
+        #loading { display: none; margin-top: 30px; }
+        .spinner {
+            width: 50px; height: 50px;
+            border: 5px solid rgba(212, 175, 55, 0.3);
+            border-top: 5px solid var(--gold);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>Көркем AI</h1>
-        <p>Фотоңызды AI арқылы ұлттық стильде жаңартыңыз</p>
-        <div class="gen-status">Сізде <span class="gen-count">5</span> тегін генерация бар</div>
+    <div class="header">Kórkem AI</div>
+    <div class="subtitle">Жасанды интеллект арқылы этно-бейнеңді тап</div>
+
+    <div id="main-ui">
+        <label for="fileInput">
+            <div class="upload-box" id="uploadBox">
+                <div class="upload-icon">📷</div>
+                <div style="font-weight: bold;">Фото жүктеу</div>
+                <div style="font-size: 12px; color: #7f8c8d; margin-top: 5px;">JPG, PNG (макс. 5МБ)</div>
+            </div>
+        </label>
+        <input type="file" id="fileInput" accept="image/jpeg, image/png">
+
+        <button class="main-btn" id="sendBtn" style="display: none;">ӨҢДЕУДІ БАСТАУ ✨</button>
+
+        <div class="packages-title">Пакеттер (Жақында)</div>
+        
+        <div class="package-card">
+            <div>
+                <div class="pkg-name">Көшпенді (Nomad)</div>
+                <div style="font-size: 12px; color: gray;">Стандарт сапа, 10 сурет</div>
+            </div>
+            <div class="pkg-price">100 ₸</div>
+        </div>
+        <div class="package-card">
+            <div>
+                <div class="pkg-name">Сарбаз (Warrior)</div>
+                <div style="font-size: 12px; color: gray;">Жоғары сапа, 20 сурет</div>
+            </div>
+            <div class="pkg-price">200 ₸</div>
+        </div>
+        <div class="package-card" style="border-left-color: var(--accent);">
+            <div>
+                <div class="pkg-name">Хан (Khan)</div>
+                <div style="font-size: 12px; color: gray;">Премиум сапа, 30 сурет</div>
+            </div>
+            <div class="pkg-price" style="background: var(--accent);">300 ₸</div>
+        </div>
     </div>
 
-    <div class="upload-card" id="upload-btn" onclick="uploadPhoto()">
-        <span class="upload-icon">📷</span>
-        <p id="upload-text" style="color: #6d4c41; font-weight: bold;">Фото жүктеу</p>
-        <div style="font-size: 12px; color: #8d6e63;">JPG, PNG, WEBP (макс. 5Мб)</div>
-    </div>
-
-    <button class="pricing-btn" onclick="openPricing()">Пакеттерді көру</button>
-    
-    <div class="examples">
-        <div class="example-img"></div>
-        <div class="example-img"></div>
-        <div class="example-img"></div>
+    <div id="loading">
+        <div class="spinner"></div>
+        <h3 style="color: var(--gold);">Қалыпқа келуде...</h3>
+        <p style="color: #7f8c8d; font-size: 14px;">Сурет өңделуде. Нәтиже Телеграм чатқа келеді!</p>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
+        
+        const fileInput = document.getElementById('fileInput');
+        const uploadBox = document.getElementById('uploadBox');
+        const sendBtn = document.getElementById('sendBtn');
+        const mainUi = document.getElementById('main-ui');
+        const loading = document.getElementById('loading');
+        let selectedFile = null;
 
-        const API_URL = "https://0mwpwu9rhj.execute-api.eu-north-1.amazonaws.com/prod/"; 
+        fileInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                selectedFile = this.files[0];
+                uploadBox.innerHTML = '<div class="upload-icon">✅</div><div style="font-weight: bold; color: green;">' + selectedFile.name + '</div>';
+                uploadBox.style.borderColor = "green";
+                sendBtn.style.display = 'block';
+            }
+        });
 
-        function uploadPhoto() {
-            tg.HapticFeedback.impactOccurred('medium');
+        sendBtn.addEventListener('click', function() {
+            if (!selectedFile) return;
             
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/*';
-            
-            input.onchange = e => {
-                const file = e.target.files[0]; 
-                if (!file) return;
+            mainUi.style.display = 'none';
+            loading.style.display = 'block';
 
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const base64String = event.target.result.split(',')[1];
-                    sendToBackend(base64String);
-                };
-                reader.readAsDataURL(file);
-            };
-            
-            input.click();
-        }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64Data = e.target.result.split(',')[1];
+                const userId = tg.initDataUnsafe?.user?.id || 'guest';
+                
+                // Амазон API Gateway сілтемесін осында қой (Сенде бұрын болған)
+                const apiGatewayUrl = "СЕНІҢ_API_GATEWAY_СІЛТЕМЕҢ"; 
 
-        async function sendToBackend(base64Data) {
-            tg.MainButton.setText("Фото жүктелуде... ✨").show();
-            document.getElementById('upload-text').innerText = "Жүктелуде...";
-
-            const payload = {
-                image_data: base64Data,
-                user_id: tg.initDataUnsafe.user?.id || "guest"
-            };
-
-            try {
-                const response = await fetch(API_URL, {
+                fetch(apiGatewayUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload) 
+                    body: JSON.stringify({ image_data: base64Data, user_id: userId })
+                })
+                .then(response => {
+                    setTimeout(() => { tg.close(); }, 3000); // 3 секундтан соң жабады
+                })
+                .catch(err => {
+                    alert("Қате шықты: " + err);
+                    tg.close();
                 });
-
-                if (response.ok) {
-                    tg.HapticFeedback.notificationOccurred('success');
-                    alert("Керемет! Фото бұлтқа ұшты. AI өңдеуін күтіңіз.");
-                } else {
-                    throw new Error("Сервер жауап бермеді");
-                }
-            } catch (error) {
-                alert("Қате шықты: " + error.message);
-                tg.HapticFeedback.notificationOccurred('error');
-            } finally {
-                tg.MainButton.hide();
-                document.getElementById('upload-text').innerText = "Фото жүктеу";
-            }
-        }
-
-        function openPricing() {
-            tg.HapticFeedback.impactOccurred('light');
-            alert("Пакеттер бөлімі жақында қосылады!");
-        }
+            };
+            reader.readAsDataURL(selectedFile);
+        });
     </script>
 </body>
 </html>
