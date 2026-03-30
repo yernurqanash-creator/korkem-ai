@@ -14,11 +14,15 @@
             --accent: #1ABC9C; /* Көгілдір */
             --btn-bg: #2C3E50;
         }
+        
+        /* ЖАҢА ҚАЗАҚИ ДИЗАЙН (ФОН) */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-color); color: var(--text-dark);
             margin: 0; padding: 20px; text-align: center;
-            background-image: url('https://www.transparenttextures.com/patterns/aged-paper.png');
+            /* НӘЗІК ҚАЗАҚИ ФОН (Subtle background pattern) */
+            background-image: url('https://www.transparenttextures.com/patterns/arabesque.png'); 
+            background-blend-mode: multiply;
         }
         
         /* Тіл ауыстыру */
@@ -30,8 +34,24 @@
         }
         .lang-btn.active { background: var(--gold); color: white; }
 
-        .header { font-size: 30px; font-weight: 900; color: var(--btn-bg); margin-bottom: 5px; }
+        /* ЖАҢА ТАҚЫРЫП ДИЗАЙНЫ */
+        .header { 
+            font-size: 32px; font-weight: 900; color: var(--btn-bg); 
+            margin-bottom: 5px; position: relative;
+            letter-spacing: 1px; text-transform: uppercase;
+        }
         .header span { color: var(--gold); }
+        
+        /* ТАҚЫРЫПТЫҢ АСТЫНДАҒЫ АЛТЫН ОЮ */
+        .header::after {
+            content: "🙐 🙒"; /* Элиталық ою символы */
+            display: block;
+            font-size: 24px;
+            color: var(--gold);
+            margin-top: 5px;
+            opacity: 0.8;
+        }
+        
         .subtitle { font-size: 14px; color: #7f8c8d; margin-bottom: 25px; }
 
         /* Фото жүктеу аймағы */
@@ -52,9 +72,16 @@
 
         /* Пакеттер */
         .packages-title { font-size: 18px; font-weight: bold; margin-bottom: 15px; color: var(--btn-bg); text-align: left; }
+        
+        /* ЖАҢА ПАКЕТ ДИЗАЙНЫ */
         .package-card {
-            background: white; border-left: 5px solid var(--gold); border-radius: 12px;
-            padding: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;
+            background: white; 
+            border-left: 5px solid var(--gold); 
+            border-radius: 12px;
+            padding: 15px; margin-bottom: 12px; 
+            display: flex; justify-content: space-between; align-items: center;
+            /* ПАКЕТТЕРГЕ ҚАЗАҚИ РЕҢК (Алтын көлеңке) */
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.15);
         }
         .pkg-name { font-weight: bold; font-size: 16px; color: var(--btn-bg); text-align: left; }
         .pkg-desc { font-size: 12px; color: gray; margin-top: 3px; text-align: left; }
@@ -79,15 +106,12 @@
         .slider-container img {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;
         }
-        /* Бұрынғы суретті кесу (clip-path) */
         #img-before { clip-path: inset(0 50% 0 0); }
         
-        /* Ползуноктың өзі */
         .slider-input {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             opacity: 0; cursor: ew-resize; z-index: 10;
         }
-        /* Ползуноктың ортасындағы сызық */
         .slider-line {
             position: absolute; top: 0; left: 50%; width: 4px; height: 100%;
             background: white; z-index: 5; transform: translateX(-50%);
@@ -159,7 +183,7 @@
     </div>
 
     <div id="result-ui">
-        <div class="header">Нәтиже</div>
+        <div class="header" style="font-size: 24px;">Нәтиже</div>
         
         <div class="slider-container">
             <img id="img-after" src="" alt="After">
@@ -177,7 +201,6 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
         
-        // --- СӨЗДІК ---
         const dict = {
             'kz': {
                 'subtitle': 'Жасанды интеллект арқылы фотоңызды жаңартыңыз',
@@ -215,7 +238,6 @@
             if(selectedFile) document.getElementById('t-upload-title').innerText = dict[lang]['success'];
         }
 
-        // --- ЛОГИКА ---
         const fileInput = document.getElementById('fileInput');
         const uploadBox = document.getElementById('uploadBox');
         const sendBtn = document.getElementById('sendBtn');
@@ -228,7 +250,7 @@
                 selectedFile = this.files[0];
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    localImageDataUrl = e.target.result; // "Бұрынғы" суретті сақтап қоямыз
+                    localImageDataUrl = e.target.result;
                     uploadBox.innerHTML = '<div class="upload-icon">✅</div><div style="font-weight: bold; font-size: 18px; color: var(--accent);" id="t-upload-title">' + dict[currentLang]['success'] + '</div><div style="font-size: 12px; color: #7f8c8d; margin-top: 5px;">' + selectedFile.name + '</div>';
                     uploadBox.style.borderColor = "var(--accent)";
                     sendBtn.style.display = 'block';
@@ -237,7 +259,6 @@
             }
         });
 
-        // --- ПОЛЗУНОК ЛОГИКАСЫ ---
         const slider = document.getElementById('compare-slider');
         const imgBefore = document.getElementById('img-before');
         const sliderLine = document.getElementById('slider-line');
@@ -250,7 +271,6 @@
             sliderButton.style.left = `${sliderValue}%`;
         });
 
-        // --- АМАЗОНҒА ЖІБЕРУ ЖӘНЕ КҮТУ ---
         sendBtn.addEventListener('click', function() {
             if (!selectedFile) return;
             document.getElementById('main-ui').style.display = 'none';
@@ -259,7 +279,6 @@
             const base64Data = localImageDataUrl.split(',')[1];
             const userId = tg.initDataUnsafe?.user?.id || 'guest';
             
-            // 🔴 1. СУРЕТТІ ӨҢДЕУГЕ ЖІБЕРЕТІН СІЛТЕМЕ (Сенің бұрынғы API Gateway сілтемең)
             const apiGatewayUrl = "https://0mwpwu9rhj.execute-api.eu-north-1.amazonaws.com/prod/"; 
 
             fetch(apiGatewayUrl, {
@@ -268,24 +287,13 @@
                 body: JSON.stringify({ image_data: base64Data, user_id: userId })
             }).catch(err => console.log(err));
 
-            // 🔴 2. МИНИ АПП 15 СЕКУНД КҮТІП БАРЫП, НӘТИЖЕНІ СҰРАЙДЫ
-            // Әзірге бізде "Статус сұрайтын" бөлек API жоқ болғандықтан, 
-            // Біз "Келбеттің" анимациясын көрсету үшін таймер қоямыз
-            
             setTimeout(() => {
-                // Магиялық экранды қосу
                 document.getElementById('loading-ui').style.display = 'none';
                 document.getElementById('result-ui').style.display = 'block';
                 
-                // "Бұрынғы" суретке өзіміздің түпнұсқаны қоямыз
                 document.getElementById('img-before').src = localImageDataUrl;
-                
-                // "Кейінгі" суретке (Әзірге визуал үшін осыны қойып тұрамыз. 
-                // Негізі бұл жерде Амазоннан келген URL тұруы керек)
                 document.getElementById('img-after').src = localImageDataUrl; 
-                
-                // ЕСКЕРТУ: Нағыз жұмыс істеуі үшін бізге Амазоннан "status_api" ашу керек.
-            }, 15000); // 15 секунд күтеді
+            }, 15000);
         });
     </script>
 </body>
