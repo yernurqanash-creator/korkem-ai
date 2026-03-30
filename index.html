@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Көркем AI</title>
+    <title>Kórkem AI</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: #F5F1E7; /* Ақшыл бежевый, киіз түсі */
+            --bg-color: #FDFBF7; /* Ақшыл киіз түсі */
             --text-dark: #2C3E50;
-            --gold: #D4AF37;
-            --accent: #40E0D0; /* Көгілдір / Turquoise */
-            --btn-bg: #34495E;
+            --gold: #D4AF37; /* Алтын */
+            --gold-light: #F4E5B3;
+            --accent: #1ABC9C; /* Көгілдір / Turquoise */
+            --btn-bg: #2C3E50;
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -20,143 +21,196 @@
             margin: 0;
             padding: 20px;
             text-align: center;
-            /* Фонға нәзік текстура қосуға болады */
-            background-image: url('https://www.transparenttextures.com/patterns/cream-paper.png'); 
+            background-image: url('https://www.transparenttextures.com/patterns/aged-paper.png');
         }
-        .header {
-            font-size: 28px;
-            font-weight: bold;
-            color: var(--gold);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 5px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        
+        /* Тіл ауыстыру батырмалары */
+        .lang-switch { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 20px; }
+        .lang-btn {
+            background: transparent; border: 1px solid var(--gold); color: var(--gold);
+            padding: 5px 10px; border-radius: 15px; font-size: 12px; cursor: pointer;
+            transition: 0.3s; font-weight: bold;
         }
-        .subtitle {
-            font-size: 14px;
-            color: var(--text-dark);
-            margin-bottom: 25px;
-            font-style: italic;
-        }
+        .lang-btn.active { background: var(--gold); color: white; }
+
+        /* Басты тақырып */
+        .header { font-size: 32px; font-weight: 800; color: var(--btn-bg); letter-spacing: 1px; margin-bottom: 5px; }
+        .header span { color: var(--gold); }
+        .subtitle { font-size: 14px; color: #7f8c8d; margin-bottom: 30px; }
+
+        /* Фото жүктеу аймағы */
         .upload-box {
-            background: #fff;
-            border: 2px dashed var(--gold);
-            border-radius: 15px;
-            padding: 40px 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            transition: 0.3s;
+            background: white; border: 2px dashed var(--gold); border-radius: 20px;
+            padding: 40px 20px; margin-bottom: 20px; box-shadow: 0 10px 20px rgba(212, 175, 55, 0.1);
+            transition: transform 0.2s; cursor: pointer;
         }
         .upload-box:active { transform: scale(0.98); }
         .upload-icon { font-size: 40px; margin-bottom: 10px; }
-        
+        #fileInput { display: none; }
+
+        /* Негізгі батырма */
+        .main-btn {
+            background: var(--btn-bg); color: white; border: none; padding: 16px 30px;
+            font-size: 16px; border-radius: 30px; width: 100%; font-weight: bold;
+            box-shadow: 0 4px 15px rgba(44, 62, 80, 0.4); margin-bottom: 30px;
+            display: none; transition: 0.3s;
+        }
+        .main-btn:active { transform: translateY(2px); }
+
         /* Пакеттер дизайны */
-        .packages-title { font-size: 18px; font-weight: bold; margin: 30px 0 15px; color: var(--btn-bg); }
+        .packages-title { font-size: 18px; font-weight: bold; margin-bottom: 15px; color: var(--btn-bg); text-align: left; }
         .package-card {
-            background: white;
-            border-left: 5px solid var(--gold);
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            background: white; border-left: 5px solid var(--gold); border-radius: 12px;
+            padding: 15px; margin-bottom: 12px; display: flex; justify-content: space-between;
+            align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.03); text-align: left;
         }
         .pkg-name { font-weight: bold; font-size: 16px; color: var(--btn-bg); }
-        .pkg-price { background: var(--gold); color: white; padding: 5px 12px; border-radius: 20px; font-size: 14px; font-weight: bold; }
-        
-        #fileInput { display: none; }
-        .main-btn {
-            background: var(--btn-bg);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-size: 16px;
-            border-radius: 25px;
-            width: 100%;
-            font-weight: bold;
-            box-shadow: 0 4px 10px rgba(52, 73, 94, 0.3);
-            margin-top: 10px;
-        }
-        
-        /* Loading анимациясы */
-        #loading { display: none; margin-top: 30px; }
+        .pkg-desc { font-size: 12px; color: gray; margin-top: 3px; }
+        .pkg-price { background: var(--gold-light); color: var(--btn-bg); padding: 5px 12px; border-radius: 20px; font-size: 14px; font-weight: bold; }
+
+        /* Лоадинг анимациясы */
+        #loading-ui { display: none; margin-top: 50px; }
         .spinner {
-            width: 50px; height: 50px;
-            border: 5px solid rgba(212, 175, 55, 0.3);
-            border-top: 5px solid var(--gold);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
+            width: 60px; height: 60px; border: 5px solid var(--gold-light);
+            border-top: 5px solid var(--gold); border-radius: 50%;
+            animation: spin 1s linear infinite; margin: 0 auto 20px;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .loading-text { font-size: 18px; font-weight: bold; color: var(--btn-bg); margin-bottom: 10px; }
+        .loading-subtext { font-size: 14px; color: #7f8c8d; }
     </style>
 </head>
 <body>
 
-    <div class="header">Kórkem AI</div>
-    <div class="subtitle">Жасанды интеллект арқылы этно-бейнеңді тап</div>
+    <div class="lang-switch">
+        <button class="lang-btn active" onclick="setLang('kz')">KZ</button>
+        <button class="lang-btn" onclick="setLang('ru')">RU</button>
+        <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
 
     <div id="main-ui">
+        <div class="header">Kórkem <span>AI</span></div>
+        <div class="subtitle" id="t-subtitle">Фотоңыздың сапасын нейрожелімен жақсартыңыз</div>
+
         <label for="fileInput">
             <div class="upload-box" id="uploadBox">
-                <div class="upload-icon">📷</div>
-                <div style="font-weight: bold;">Фото жүктеу</div>
-                <div style="font-size: 12px; color: #7f8c8d; margin-top: 5px;">JPG, PNG (макс. 5МБ)</div>
+                <div class="upload-icon">📸</div>
+                <div style="font-weight: bold; font-size: 18px;" id="t-upload-title">Фото жүктеу</div>
+                <div style="font-size: 12px; color: #7f8c8d; margin-top: 8px;" id="t-upload-desc">Түртіңіз немесе файлды таңдаңыз (макс 5МБ)</div>
             </div>
         </label>
         <input type="file" id="fileInput" accept="image/jpeg, image/png">
 
-        <button class="main-btn" id="sendBtn" style="display: none;">ӨҢДЕУДІ БАСТАУ ✨</button>
+        <button class="main-btn" id="sendBtn"><span id="t-btn">ӨҢДЕУДІ БАСТАУ</span> ✨</button>
 
-        <div class="packages-title">Пакеттер (Жақында)</div>
+        <div class="packages-title" id="t-pkg-title">Қолжетімді пакеттер</div>
         
         <div class="package-card">
             <div>
-                <div class="pkg-name">Көшпенді (Nomad)</div>
-                <div style="font-size: 12px; color: gray;">Стандарт сапа, 10 сурет</div>
+                <div class="pkg-name" id="t-pkg1-name">🎁 Алғашқы сыйлық</div>
+                <div class="pkg-desc" id="t-pkg1-desc">2 суретті тегін өңдеу мүмкіндігі</div>
             </div>
-            <div class="pkg-price">100 ₸</div>
+            <div class="pkg-price" style="background: var(--accent); color: white;">Тегін</div>
         </div>
         <div class="package-card">
             <div>
-                <div class="pkg-name">Сарбаз (Warrior)</div>
-                <div style="font-size: 12px; color: gray;">Жоғары сапа, 20 сурет</div>
+                <div class="pkg-name" id="t-pkg2-name">Көшпенді (Nomad)</div>
+                <div class="pkg-desc" id="t-pkg2-desc">Жоғары сапа, 10 сурет</div>
             </div>
-            <div class="pkg-price">200 ₸</div>
+            <div class="pkg-price">100 ₸</div>
         </div>
         <div class="package-card" style="border-left-color: var(--accent);">
             <div>
-                <div class="pkg-name">Хан (Khan)</div>
-                <div style="font-size: 12px; color: gray;">Премиум сапа, 30 сурет</div>
+                <div class="pkg-name" id="t-pkg3-name">Хан (Khan)</div>
+                <div class="pkg-desc" id="t-pkg3-desc">Премиум сапа, 30 сурет</div>
             </div>
-            <div class="pkg-price" style="background: var(--accent);">300 ₸</div>
+            <div class="pkg-price" style="background: var(--accent); color: white;">300 ₸</div>
         </div>
     </div>
 
-    <div id="loading">
+    <div id="loading-ui">
         <div class="spinner"></div>
-        <h3 style="color: var(--gold);">Қалыпқа келуде...</h3>
-        <p style="color: #7f8c8d; font-size: 14px;">Сурет өңделуде. Нәтиже Телеграм чатқа келеді!</p>
+        <div class="loading-text" id="t-load-title">Нейрожелі іске қосылды...</div>
+        <div class="loading-subtext" id="t-load-desc">Бұл 10-15 секунд алуы мүмкін. Нәтиже Телеграм чатқа келеді!</div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
         
+        // 🌍 Сөздік (Үш тіл)
+        const dict = {
+            'kz': {
+                'subtitle': 'Фотоңыздың сапасын нейрожелімен жақсартыңыз',
+                'upload-title': 'Фото жүктеу',
+                'upload-desc': 'Түртіңіз немесе файлды таңдаңыз (макс 5МБ)',
+                'btn': 'ӨҢДЕУДІ БАСТАУ',
+                'pkg-title': 'Қолжетімді пакеттер',
+                'pkg1-name': '🎁 Алғашқы сыйлық', 'pkg1-desc': '2 суретті тегін өңдеу мүмкіндігі',
+                'pkg2-name': 'Көшпенді (Nomad)', 'pkg2-desc': 'Жоғары сапа, 10 сурет',
+                'pkg3-name': 'Хан (Khan)', 'pkg3-desc': 'Премиум сапа, 30 сурет',
+                'load-title': 'Нейрожелі іске қосылды...',
+                'load-desc': 'Бұл 15-20 секунд алуы мүмкін. Дайын болғанда нәтиже чатқа жіберіледі!',
+                'success': 'Дайын! ✅'
+            },
+            'ru': {
+                'subtitle': 'Улучшите качество фото с помощью ИИ',
+                'upload-title': 'Загрузить фото',
+                'upload-desc': 'Нажмите или выберите файл (макс 5МБ)',
+                'btn': 'НАЧАТЬ ОБРАБОТКУ',
+                'pkg-title': 'Доступные пакеты',
+                'pkg1-name': '🎁 Первый подарок', 'pkg1-desc': '2 бесплатные генерации',
+                'pkg2-name': 'Кочевник (Nomad)', 'pkg2-desc': 'Высокое качество, 10 фото',
+                'pkg3-name': 'Хан (Khan)', 'pkg3-desc': 'Премиум качество, 30 фото',
+                'load-title': 'Нейросеть запущена...',
+                'load-desc': 'Это может занять 15-20 секунд. Результат придет в чат Телеграм!',
+                'success': 'Готово! ✅'
+            },
+            'en': {
+                'subtitle': 'Enhance your photo quality with AI',
+                'upload-title': 'Upload Photo',
+                'upload-desc': 'Tap or select a file (max 5MB)',
+                'btn': 'START PROCESSING',
+                'pkg-title': 'Available Packages',
+                'pkg1-name': '🎁 Welcome Gift', 'pkg1-desc': '2 free generations',
+                'pkg2-name': 'Nomad', 'pkg2-desc': 'High quality, 10 photos',
+                'pkg3-name': 'Khan', 'pkg3-desc': 'Premium quality, 30 photos',
+                'load-title': 'AI is working...',
+                'load-desc': 'This might take 15-20 seconds. The result will be sent to the Telegram chat!',
+                'success': 'Ready! ✅'
+            }
+        };
+
+        let currentLang = 'kz';
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const words = dict[lang];
+            for (let key in words) {
+                let el = document.getElementById('t-' + key);
+                if(el) el.innerText = words[key];
+            }
+            if(selectedFile) {
+                document.getElementById('t-upload-title').innerText = dict[lang]['success'];
+            }
+        }
+
+        // Логика
         const fileInput = document.getElementById('fileInput');
         const uploadBox = document.getElementById('uploadBox');
         const sendBtn = document.getElementById('sendBtn');
         const mainUi = document.getElementById('main-ui');
-        const loading = document.getElementById('loading');
+        const loadingUi = document.getElementById('loading-ui');
         let selectedFile = null;
 
         fileInput.addEventListener('change', function() {
             if (this.files && this.files[0]) {
                 selectedFile = this.files[0];
-                uploadBox.innerHTML = '<div class="upload-icon">✅</div><div style="font-weight: bold; color: green;">' + selectedFile.name + '</div>';
-                uploadBox.style.borderColor = "green";
+                uploadBox.innerHTML = '<div class="upload-icon">✅</div><div style="font-weight: bold; font-size: 18px; color: var(--accent);" id="t-upload-title">' + dict[currentLang]['success'] + '</div><div style="font-size: 12px; color: #7f8c8d; margin-top: 5px;">' + selectedFile.name + '</div>';
+                uploadBox.style.borderColor = "var(--accent)";
                 sendBtn.style.display = 'block';
             }
         });
@@ -165,14 +219,14 @@
             if (!selectedFile) return;
             
             mainUi.style.display = 'none';
-            loading.style.display = 'block';
+            loadingUi.style.display = 'block';
 
             const reader = new FileReader();
             reader.onload = function(e) {
                 const base64Data = e.target.result.split(',')[1];
                 const userId = tg.initDataUnsafe?.user?.id || 'guest';
                 
-                // Амазон API Gateway сілтемесін осында қой (Сенде бұрын болған)
+                // 🔴 МЫНА ЖЕРГЕ ӨЗІҢНІҢ АМАЗОН API GATEWAY СІЛТЕМЕҢДІ ҚОЙ:
                 const apiGatewayUrl = "https://0mwpwu9rhj.execute-api.eu-north-1.amazonaws.com/prod/"; 
 
                 fetch(apiGatewayUrl, {
@@ -181,10 +235,11 @@
                     body: JSON.stringify({ image_data: base64Data, user_id: userId })
                 })
                 .then(response => {
-                    setTimeout(() => { tg.close(); }, 3000); // 3 секундтан соң жабады
+                    // Әзірге сурет чатқа барады, сондықтан 3 секундтан соң жауып тастаймыз
+                    setTimeout(() => { tg.close(); }, 3000); 
                 })
                 .catch(err => {
-                    alert("Қате шықты: " + err);
+                    alert("Network Error. Please try again.");
                     tg.close();
                 });
             };
