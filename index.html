@@ -141,7 +141,7 @@
             <input type="range" min="0" max="100" value="50" class="slider-input" id="compare-slider">
         </div>
         <div class="action-buttons">
-            <button class="download-btn" id="t-download" onclick="tg.close()">💾 Сақтау</button>
+           <button class="download-btn" id="t-download" onclick="savePhotoToPhone()">💾 Телефонға сақтау</button>
             <button class="new-photo-btn" id="t-new" onclick="location.reload()">🔄 Жаңа фото</button>
         </div>
     </div>
@@ -223,6 +223,28 @@
                 }).catch(err => console.log(err));
             }
         };
+
+      // 🔴 ЖАҢА САҚТАУ ФУНКЦИЯСЫ
+        function downloadResult() {
+            const imgUrl = document.getElementById('img-after').src;
+            const userId = tg.initDataUnsafe?.user?.id || 'guest';
+            
+            // Клиентке басылғанын білдіру үшін текстті өзгертеміз
+            const btn = document.getElementById('t-download');
+            btn.innerHTML = "⏳ Чатқа жіберілуде...";
+            btn.style.opacity = "0.7";
+            btn.disabled = true;
+
+            // Амазонға: "Мына суретті чатқа Файл қылып жібер" деп бұйрық береміз
+            fetch(apiGatewayUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'send_to_chat', user_id: userId, photo_url: imgUrl })
+            }).then(() => {
+                // Бұйрық кеткен соң, Мини Аппты бірден жабамыз
+                tg.close();
+            });
+        }
 
        fileInput.addEventListener('change', function() {
             if (this.files && this.files[0]) {
