@@ -224,16 +224,48 @@
             }
         };
 
-        fileInput.addEventListener('change', function() {
+       fileInput.addEventListener('change', function() {
             if (this.files && this.files[0]) {
                 selectedFile = this.files[0];
                 const reader = new FileReader();
+                
                 reader.onload = function(e) {
-                    localImageDataUrl = e.target.result;
-                    uploadBox.innerHTML = '<div class="upload-icon" style="color: var(--gold);">✔</div><div style="font-weight: 800; font-size: 16px; margin-bottom: 6px; color: var(--gold);" id="t-upload-title">' + dict[currentLang]['success'] + '</div><div style="font-size: 12px; color: #888;">' + selectedFile.name + '</div>';
-                    uploadBox.style.borderColor = "var(--gold)";
-                    uploadBox.style.backgroundColor = "var(--gold-light)";
-                    sendBtn.style.display = 'block';
+                    // Суретті автоматты түрде кішірейту (Compression) логикасы
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+                        const max_size = 1400; // AI-ға сыюы үшін максималды өлшем
+
+                        // Пропорцияны сақтай отырып кішірейту
+                        if (width > height) {
+                            if (width > max_size) {
+                                height *= max_size / width;
+                                width = max_size;
+                            }
+                        } else {
+                            if (height > max_size) {
+                                width *= max_size / height;
+                                height = max_size;
+                            }
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        // Кішірейтілген суретті (сапасы 85%) базаға сақтау
+                        localImageDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+
+                        // Интерфейсті жаңарту
+                        uploadBox.innerHTML = '<div class="upload-icon" style="color: var(--gold);">✔</div><div style="font-weight: 800; font-size: 16px; margin-bottom: 6px; color: var(--gold);" id="t-upload-title">' + dict[currentLang]['success'] + '</div><div style="font-size: 12px; color: #888;">' + selectedFile.name + '</div>';
+                        uploadBox.style.borderColor = "var(--gold)";
+                        uploadBox.style.backgroundColor = "var(--gold-light)";
+                        sendBtn.style.display = 'block';
+                    };
+                    img.src = e.target.result;
                 };
                 reader.readAsDataURL(selectedFile);
             }
